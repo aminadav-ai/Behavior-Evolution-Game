@@ -338,8 +338,8 @@
 		for(var i=0; i<5; i++) {
 			for(var j=0; j<5; j++) {
 
-				var x = canvas.width/2 + (i-2)*radius*2;
-				var y = canvas.height/2 + (j-2)*radius*2;
+				var x = canvas.width/2 + (2-i)*radius*2;
+				var y = canvas.height/2 + (2-j)*radius*2;
 
 				ctx.beginPath();
 				ctx.arc(x, y, radius, 0, 2 * Math.PI);
@@ -502,7 +502,7 @@
 		}
 		
 		return false;
-	}
+	} // function think(circle)
 
 
 	function drawPlant(ctx, x, y) {
@@ -746,8 +746,93 @@
 				}			
 			}
 		}	
-	
-	}
+
+
+
+		// check with genes
+		
+		var found,fi,fj,fshift = false;
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(carnies1[i][j] === 1) { 
+					
+					if(circle.genes[100 + i*5 + j] != 0 || circle.genes[100 + i*5 + j + 1] != 0) {
+						circle.dx = circle.genes[i*5 + j];
+						circle.dy = circle.genes[i*5 + j + 1];
+						found = true; fi=i; fj=j; fshift=100;
+						break;
+					}
+				}
+			}		
+			if(found) {
+				break;
+			}
+		}
+
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(herbies1[i][j] === 1) { 
+					
+					if(circle.genes[50 + i*5 + j] != 0 || circle.genes[50 + i*5 + j + 1] != 0) {
+						circle.dx = circle.genes[50 + i*5 + j];
+						circle.dy = circle.genes[50 + i*5 + j + 1];
+						found =  true; fi=i; fj=j; fshift=50;
+						break;
+					}				
+				}
+			}		
+			if(found) {
+				break;
+			}
+		}
+
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(plants1[i][j] === 1) { 
+					
+					if(circle.genes[i*5 + j] != 0 || circle.genes[i*5 + j + 1] != 0) {
+						circle.dx = circle.genes[100 + i*5 + j];
+						circle.dy = circle.genes[100 + i*5 + j + 1];
+						found =  true; fi=i; fj=j; fshift=0;
+						break;
+					}				
+				}
+			}		
+			if(found) {
+				break;
+			}
+		}
+		
+		if(found) {
+		
+			// draw red arc on Genes Canvas
+
+			var canvas1;
+			
+			if(fshift===0){
+				canvas1 = canvasGenesPlants;
+			}
+			else if(fshift===50) {
+				canvas1 = canvasGenesHerbies;
+			}
+			else if(fshift===100) {
+				canvas1 = canvasGenesCarnies;
+			}
+			
+			var x = canvas1.width/2 + (2-fi)*radius*2;
+			var y = canvas1.height/2 + (2-fj)*radius*2;
+
+
+			ctx1 = canvas1.getContext("2d");
+			ctx1.strokeStyle = 'red';
+			ctx1.beginPath();
+			ctx1.arc(x, y, radius, 0, 2 * Math.PI);
+			ctx1.stroke();				
+
+		}
+
+	} // function vision(circle)
 
 	function selectedCircleShowInfo() {
 	
