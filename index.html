@@ -758,8 +758,8 @@
 				if(carnies1[i][j] === 1) { 
 					
 					if(circle.genes[100 + i*5 + j] != 0 || circle.genes[100 + i*5 + j + 1] != 0) {
-						circle.dx = circle.genes[i*5 + j];
-						circle.dy = circle.genes[i*5 + j + 1];
+						//circle.dx = circle.genes[i*5 + j];
+						//circle.dy = circle.genes[i*5 + j + 1];
 						found = true; fi=i; fj=j; fshift=100;
 						break;
 					}
@@ -775,8 +775,8 @@
 				if(herbies1[i][j] === 1) { 
 					
 					if(circle.genes[50 + i*5 + j] != 0 || circle.genes[50 + i*5 + j + 1] != 0) {
-						circle.dx = circle.genes[50 + i*5 + j];
-						circle.dy = circle.genes[50 + i*5 + j + 1];
+						//circle.dx = circle.genes[50 + i*5 + j];
+						//circle.dy = circle.genes[50 + i*5 + j + 1];
 						found =  true; fi=i; fj=j; fshift=50;
 						break;
 					}				
@@ -792,8 +792,8 @@
 				if(plants1[i][j] === 1) { 
 					
 					if(circle.genes[i*5 + j] != 0 || circle.genes[i*5 + j + 1] != 0) {
-						circle.dx = circle.genes[100 + i*5 + j];
-						circle.dy = circle.genes[100 + i*5 + j + 1];
+						//circle.dx = circle.genes[100 + i*5 + j];
+						//circle.dy = circle.genes[100 + i*5 + j + 1];
 						found =  true; fi=i; fj=j; fshift=0;
 						break;
 					}				
@@ -828,7 +828,22 @@
 			ctx1.strokeStyle = 'red';
 			ctx1.beginPath();
 			ctx1.arc(x, y, radius, 0, 2 * Math.PI);
-			ctx1.stroke();				
+			ctx1.stroke();	
+			
+			//-----------------
+			
+			var ret = think(circle);
+			console.log("think returns "+ret);
+			if(ret === false) {
+				// sometimes change direction
+				//console.log("678");
+				if(Math.random() < 0.01) {
+					//console.log("dfg");
+					//circle.dx = Math.random() * 2 - 1;
+					//circle.dy = Math.random() * 2 - 1;
+				}				
+			}           
+			
 
 		}
 
@@ -927,9 +942,11 @@
 									generation: circle1.generation + 1
 								    });	
 								//mutate
-								var pos = Math.floor(Math.random() * 74);
-								circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
-								circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
+								if(Math.random() < 0.220) {
+									var pos = Math.floor(Math.random() * 74);
+									circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
+									circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
+								}
 							}
 						}	
 					}
@@ -976,7 +993,12 @@
 						generation: circle.generation + 1
 					    });	
 					//mutate
-					circles[circles.length-1].genes[Math.floor(Math.random() * 150)] = Math.random() * 2 - 1;				}
+					if(Math.random() < 0.220) {
+						var pos = Math.floor(Math.random() * 74);
+						circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
+						circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
+					}
+				}
 			}
 		});
 
