@@ -103,7 +103,7 @@ You can select an individual animal and get detailed information about it below.
 		<td colspan="2" style="height: 60px;">
 			  <input type="range" id="plantGrowthRange" min="0" max="100" value="75">
 			  <label>Grass growth</label><br>
-			  <input type="range" id="energyTransmissionRange" min="0" max="100" value="35">
+			  <input type="range" id="energyTransmissionRange" min="0" max="100" value="25">
 			  <label>Energy transmission</label><br>
 		</td>
 	</tr>
@@ -959,7 +959,7 @@ You can select an individual animal and get detailed information about it below.
 									generation: circle1.generation + 1
 								    });	
 								//mutate
-								if(Math.random() < 0.220) {
+								if(Math.random() < 0.9) {
 									var pos = Math.floor(Math.random() * 74);
 									circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
 									circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
@@ -967,7 +967,7 @@ You can select an individual animal and get detailed information about it below.
 							}
 						}	
 					}
-	1				});
+					});
 			}
 
 		});
@@ -1010,7 +1010,7 @@ You can select an individual animal and get detailed information about it below.
 						generation: circle.generation + 1
 					    });	
 					//mutate
-					if(Math.random() < 0.220) {
+					if(Math.random() < 0.9) {
 						var pos = Math.floor(Math.random() * 74);
 						circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
 						circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
