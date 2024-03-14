@@ -206,30 +206,32 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	lionImage.src = "https://img.icons8.com/color/48/lion-full-body.png";
 	
 	
-	//----------------------------------  mutate -------------------------------------
+	//----------------------------------  getMoveRandomNumber -------------------------------------
 	
-	function getMutationRandomNumber() {
+	function getMoveRandomNumber() {
 
 		let randomNumber = Math.random();
 
-		if (Math.random() < 0.5) {
+		if (randomNumber < 0.5) {
 			randomNumber -= 1;
 		}
 
 		return randomNumber;
 	}	
 	
+	//----------------------------------  mutate -------------------------------------
+
 	function mutate(circle) {
 		if(Math.random() < 0.9) {
 			var pos = Math.floor(Math.random() * 74);
 			if(Math.random() < 0.9) {
-				circle.genes[pos*2] = 1; //getMutationRandomNumber();
-				//circle.genes[pos*2+1] = 1; //getMutationRandomNumber();
+				circle.genes[pos*2] = getMoveRandomNumber()
+				circle.genes[pos*2+1] = getMoveRandomNumber()
 			}
-			/*else {
+			else {
 				circle.genes[pos*2] = 0;
 				circle.genes[pos*2+1] = 0;
-			}*/
+			}
 		}
 	}	
 	
@@ -907,7 +909,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			document.getElementById("infoGeneration").textContent = selectedCircle.generation;
 			
 			//---
-			
+/*			
 			var str = "\n";
 			
 			for (var i=0; i<150; i++) {
@@ -945,7 +947,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 			str += "\n"
 
-			document.getElementById("infoGenes").textContent = str;
+			document.getElementById("infoGenes").textContent = str;*/
 		}
 	}
 
@@ -1108,18 +1110,17 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				circle.energy -= 0.002;
 
 				var ret = think(circle);
-				if(circle === selectedCircle) {
+				/*if(circle === selectedCircle) {
 					console.log("think returns "+ret+", dx="+circle.dx+", dy="+circle.dy);
-				}
+				}*/
 				if(ret === false) {
 					// sometimes change direction
-					//console.log("678");
 					if(Math.random() < 0.01) {
-						circle.dx = Math.random() * 2 - 1;
-						circle.dy = Math.random() * 2 - 1;
-						if(circle === selectedCircle) {
+						circle.dx = getMoveRandomNumber();
+						circle.dy = getMoveRandomNumber();
+						/*if(circle === selectedCircle) {
 							console.log("change direction to random, dx="+circle.dx+", dy="+circle.dy);
-						}
+						}*/
 					}				
 				}           
 				var x1 = circle.x + circle.dx;
