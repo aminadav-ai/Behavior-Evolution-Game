@@ -33,6 +33,11 @@
 		background-color: #0056b3;
 	}	
 
+	#infoGenes {
+	    display: block; /* This makes the span a block-level element */
+	    white-space: pre-line; /* This preserves line breaks */
+	}
+	
 </style> 
 </head>
 <body>
@@ -97,8 +102,8 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			<canvas id="canvasGenesHerbies" width="110" height="110" style="background-color: black;"></canvas>
 			&nbsp;
 			<canvas id="canvasGenesCarnies" width="110" height="110" style="background-color: black;"></canvas>			
-<!--			<br>
-			<span style="color:blue;" id="infoGenes">-</span>-->
+			<br>
+			<span style="color:blue;" id="infoGenes">-</span>
 		</td>
 	</tr>
 	<tr>
@@ -203,17 +208,28 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	
 	//----------------------------------  mutate -------------------------------------
 	
+	function getMutationRandomNumber() {
+
+		let randomNumber = Math.random();
+
+		if (Math.random() < 0.5) {
+			randomNumber -= 1;
+		}
+
+		return randomNumber;
+	}	
+	
 	function mutate(circle) {
-		if(Math.random() < 0.8) {
+		if(Math.random() < 0.9) {
 			var pos = Math.floor(Math.random() * 74);
-			if(Math.random() < 0.8) {
-				circle.genes[pos*2] = Math.random() * 2 - 1;
-				circle.genes[pos*2+1] = Math.random() * 2 - 1;
+			if(Math.random() < 0.9) {
+				circle.genes[pos*2] = 1; //getMutationRandomNumber();
+				//circle.genes[pos*2+1] = 1; //getMutationRandomNumber();
 			}
-			else {
+			/*else {
 				circle.genes[pos*2] = 0;
 				circle.genes[pos*2+1] = 0;
-			}
+			}*/
 		}
 	}	
 	
@@ -385,7 +401,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 
 				ctx.beginPath();
 				ctx.moveTo(x, y); 
-				ctx.lineTo(x + selectedCircle.genes[shift + i*5 + j]*radius, y + selectedCircle.genes[shift + i*5 + j + 1]*radius); 
+				ctx.lineTo(x + selectedCircle.genes[shift + (i*5 + j)*2]*radius, y + selectedCircle.genes[shift + (i*5 + j)*2 + 1]*radius); 
 				ctx.stroke(); 
 			}
 		}
@@ -504,9 +520,9 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			for (var j=0; j<5; j++) {		
 				if(carnies1[i][j] === 1) { 
 					
-					if(circle.genes[100 + i*5 + j] != 0 || circle.genes[100 + i*5 + j + 1] != 0) {
-						circle.dx = circle.genes[i*5 + j];
-						circle.dy = circle.genes[i*5 + j + 1];
+					if(circle.genes[100 + (i*5 + j)*2] != 0 || circle.genes[100 + (i*5 + j)*2 + 1] != 0) {
+						circle.dx = circle.genes[100+(i*5 + j)*2];
+						circle.dy = circle.genes[100+(i*5 + j)*2 + 1];
 						return true;
 					}
 				}
@@ -517,9 +533,9 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			for (var j=0; j<5; j++) {		
 				if(herbies1[i][j] === 1) { 
 					
-					if(circle.genes[50 + i*5 + j] != 0 || circle.genes[50 + i*5 + j + 1] != 0) {
-						circle.dx = circle.genes[50 + i*5 + j];
-						circle.dy = circle.genes[50 + i*5 + j + 1];
+					if(circle.genes[50 + (i*5 + j)*2] != 0 || circle.genes[50 + (i*5 + j)*2 + 1] != 0) {
+						circle.dx = circle.genes[50 + (i*5 + j)*2];
+						circle.dy = circle.genes[50 + (i*5 + j)*2 + 1];
 						return true;
 					}				
 				}
@@ -530,9 +546,9 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			for (var j=0; j<5; j++) {		
 				if(plants1[i][j] === 1) { 
 					
-					if(circle.genes[i*5 + j] != 0 || circle.genes[i*5 + j + 1] != 0) {
-						circle.dx = circle.genes[100 + i*5 + j];
-						circle.dy = circle.genes[100 + i*5 + j + 1];
+					if(circle.genes[(i*5 + j)*2] != 0 || circle.genes[(i*5 + j)*2 + 1] != 0) {
+						circle.dx = circle.genes[(i*5 + j)*2];
+						circle.dy = circle.genes[(i*5 + j)*2 + 1];
 						return true;
 					}				
 				}
@@ -795,7 +811,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			for (var j=0; j<5; j++) {		
 				if(carnies1[i][j] === 1) { 
 					
-					if(circle.genes[100 + i*5 + j] != 0 || circle.genes[100 + i*5 + j + 1] != 0) {
+					if(circle.genes[100 + (i*5 + j)*2] != 0 || circle.genes[100 + (i*5 + j)*2 + 1] != 0) {
 						//circle.dx = circle.genes[i*5 + j];
 						//circle.dy = circle.genes[i*5 + j + 1];
 						found = true; fi=i; fj=j; fshift=100;
@@ -812,7 +828,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			for (var j=0; j<5; j++) {		
 				if(herbies1[i][j] === 1) { 
 					
-					if(circle.genes[50 + i*5 + j] != 0 || circle.genes[50 + i*5 + j + 1] != 0) {
+					if(circle.genes[50 + (i*5 + j)*2] != 0 || circle.genes[50 + (i*5 + j)*2 + 1] != 0) {
 						//circle.dx = circle.genes[50 + i*5 + j];
 						//circle.dy = circle.genes[50 + i*5 + j + 1];
 						found =  true; fi=i; fj=j; fshift=50;
@@ -829,7 +845,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			for (var j=0; j<5; j++) {		
 				if(plants1[i][j] === 1) { 
 					
-					if(circle.genes[i*5 + j] != 0 || circle.genes[i*5 + j + 1] != 0) {
+					if(circle.genes[(i*5 + j)*2] != 0 || circle.genes[(i*5 + j)*2 + 1] != 0) {
 						//circle.dx = circle.genes[100 + i*5 + j];
 						//circle.dy = circle.genes[100 + i*5 + j + 1];
 						found =  true; fi=i; fj=j; fshift=0;
@@ -867,22 +883,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			ctx1.beginPath();
 			ctx1.arc(x, y, radius, 0, 2 * Math.PI);
 			ctx1.stroke();	
-			
-			//-----------------
-			
-			var ret = think(circle);
-			console.log("think returns "+ret);
-			if(ret === false) {
-				// sometimes change direction
-				//console.log("678");
-				if(Math.random() < 0.01) {
-					//console.log("dfg");
-					//circle.dx = Math.random() * 2 - 1;
-					//circle.dy = Math.random() * 2 - 1;
-				}				
-			}           
-			
-
 		}
 
 	} // function vision(circle)
@@ -907,13 +907,21 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			document.getElementById("infoGeneration").textContent = selectedCircle.generation;
 			
 			//---
-/*			
+			
 			var str = "\n";
+			
+			for (var i=0; i<150; i++) {
+			
+				str += selectedCircle.genes[i].toFixed(1) + ", ";
+				
+			}
+			
+			str += "\n\n";
 			
 			for (var i=0; i<5; i++) {
 				var str1 = "";		
 				for (var j=0; j<5; j++) {		
-					str1 += "["+selectedCircle.genes[i*5 + j].toFixed(1)+","+selectedCircle.genes[i*5 + j + 1].toFixed(1)+"]  ";
+					str1 += "["+selectedCircle.genes[(i*5 + j)*2].toFixed(1)+","+selectedCircle.genes[(i*5 + j)*2 + 1].toFixed(1)+"]  ";
 				}		
 				str += str1 + "\n";
 			}
@@ -922,7 +930,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			for (var i=0; i<5; i++) {
 				var str1 = "";		
 				for (var j=0; j<5; j++) {		
-					str1 += "["+selectedCircle.genes[50 + i*5 + j].toFixed(1)+","+selectedCircle.genes[50 + i*5 + j + 1].toFixed(1)+"]  ";
+					str1 += "["+selectedCircle.genes[50 + (i*5 + j)*2].toFixed(1)+","+selectedCircle.genes[50 + (i*5 + j)*2 + 1].toFixed(1)+"]  ";
 				}		
 				str += str1 + "\n";
 			}
@@ -931,14 +939,14 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			for (var i=0; i<5; i++) {
 				var str1 = "";		
 				for (var j=0; j<5; j++) {		
-					str1 += "["+selectedCircle.genes[100 + i*5 + j].toFixed(1)+","+selectedCircle.genes[100 + i*5 + j + 1].toFixed(1)+"]  ";
+					str1 += "["+selectedCircle.genes[100 + (i*5 + j)*2].toFixed(1)+","+selectedCircle.genes[100 + (i*5 + j)*2 + 1].toFixed(1)+"]  ";
 				}		
 				str += str1 + "\n";
 			}
 			str += "\n"
 
 			document.getElementById("infoGenes").textContent = str;
-*/		}
+		}
 	}
 
 	function calcLife() {
@@ -1100,14 +1108,18 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				circle.energy -= 0.002;
 
 				var ret = think(circle);
-				//console.log("think returns "+ret);
+				if(circle === selectedCircle) {
+					console.log("think returns "+ret+", dx="+circle.dx+", dy="+circle.dy);
+				}
 				if(ret === false) {
 					// sometimes change direction
 					//console.log("678");
 					if(Math.random() < 0.01) {
-						//console.log("dfg");
 						circle.dx = Math.random() * 2 - 1;
 						circle.dy = Math.random() * 2 - 1;
+						if(circle === selectedCircle) {
+							console.log("change direction to random, dx="+circle.dx+", dy="+circle.dy);
+						}
 					}				
 				}           
 				var x1 = circle.x + circle.dx;
