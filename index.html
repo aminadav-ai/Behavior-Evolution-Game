@@ -46,7 +46,8 @@ The grass grows, you add one sheep and wait for the sheep to multiply. Then you 
 
 You can select an individual animal and get detailed information about it below.  You can also see the work of the animal’s brain and the genes responsible for behavior.  It is possible to stop the world, follow it step by step and trace the brain function of the selected animal.  For simplicity, the genes are made very primitively and the brain is also very primitive in these animals.<br><br>
 
-You can adjust the number of lions by changing the Energy transmission slider.  A larger number of lions may be needed to get rid of excess stuck mutants.
+You can adjust the number of lions by changing the Energy transmission slider.  A larger number of lions may be needed to get rid of excess stuck mutants.<br><br>
+There is some problem with frozen mutants.  The mutation function is currently under development.
 </td>
 </tr>
 </table>
@@ -192,13 +193,32 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	var makeStep = false;
 	
 	var sheepImage = new Image();
-	sheepImage.src = "https://img.icons8.com/color/48/sheep.png"; //"icons8-sheep-48.png";
+	sheepImage.src = "https://img.icons8.com/color/48/sheep.png";
 
 	var plantImage = new Image();
-	plantImage.src = "https://img.icons8.com/color/48/grass.png"; //"icons8-grass-48.png";
+	plantImage.src = "https://img.icons8.com/color/48/grass.png";
 
 	var lionImage = new Image();
-	lionImage.src = "https://img.icons8.com/color/48/lion-full-body.png"; //"icons8-lion-48.png";
+	lionImage.src = "https://img.icons8.com/color/48/lion-full-body.png";
+	
+	
+	//----------------------------------  mutate -------------------------------------
+	
+	function mutate(circle) {
+		if(Math.random() < 0.8) {
+			var pos = Math.floor(Math.random() * 74);
+			if(Math.random() < 0.8) {
+				circle.genes[pos*2] = Math.random() * 2 - 1;
+				circle.genes[pos*2+1] = Math.random() * 2 - 1;
+			}
+			else {
+				circle.genes[pos*2] = 0;
+				circle.genes[pos*2+1] = 0;
+			}
+		}
+	}	
+	
+	//--------------------------------------------------------------------------------
 
 	function findNearestCircle(x1, y1) {
 		var minDistance = Infinity;
@@ -960,12 +980,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 									genes: [...circle1.genes],
 									generation: circle1.generation + 1
 								    });	
-								//mutate
-								if(Math.random() < 0.8) {
-									var pos = Math.floor(Math.random() * 74);
-									circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
-									circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
-								}
+								mutate(circles[circles.length-1]);
 							}
 						}	
 					}
@@ -1011,12 +1026,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 						genes: [...circle.genes],
 						generation: circle.generation + 1
 					    });	
-					//mutate
-					if(Math.random() < 0.8) {
-						var pos = Math.floor(Math.random() * 74);
-						circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
-						circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
-					}
+					mutate(circles[circles.length-1]);
 				}
 			}
 		});
