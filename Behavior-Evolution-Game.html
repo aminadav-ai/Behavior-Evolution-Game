@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Behavior Evolution Game</title>  
+<style>
+	body {
+		font-family: Arial, sans-serif;
+		margin: 0;
+		padding: 0;
+		background-color: #ffcccc;
+	}
+
+        table, th, td {
+        	/*border: 1px solid black;*/
+		font-size: 22px;
+	}
+
+	button {
+		display: block;
+		margin: 10px auto;
+		padding: 8px 16px;
+		font-size: 16px;
+		cursor: pointer;
+		background-color: #007bff;
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+	}
+
+	button:hover {
+		background-color: #0056b3;
+	}	
+
+</style> 
+</head>
+<body>
+<h1>&nbsp;&nbsp;Behavior Evolution Game</h1>
+<table> 
+<tr>
+<td style="width: 800px;">
+This game was created to study how behavior is formed under the influence of mutations in genes responsible for brain function.<br><br>
+
+The grass grows, you add one sheep and wait for the sheep to multiply. Then you add one lion and wait for the sheep and lions to breed, change generations and mutate.  Within half an hour you can notice changes in the behavior of the sheep.  Changes in the behavior of lions will occur only after a long time, when sheep, with the help of many mutations, learn to effectively evade lions, then mutational changes will begin in lions.  The project is expected to run for many hours and even days to analyze the behavior of these animals.  The project is currently under development.  It is planned to add a function for saving the state of the world.<br><br>
+
+You can select an individual animal and get detailed information about it below.  You can also see the work of the animal’s brain and the genes responsible for behavior.  It is possible to stop the world, follow it step by step and trace the brain function of the selected animal.  For simplicity, the genes are made very primitively and the brain is also very primitive in these animals.<br><br>
+
+You can adjust the number of lions by changing the Energy transmission slider.  A larger number of lions may be needed to get rid of excess stuck mutants.
+</td>
+</tr>
+</table>
+<br><br>
+<table style="display: block; overflow-x: auto;">
+	<tr>
+		<td>
+			<canvas id="canvasField" width="800" height="400" style="background-color: black;"></canvas>
+		</td>
+	</tr>
+</table>
+&nbsp;&nbsp;<span style="font-size: 22px; color:blue;" id="infoSelect">Touch field to add new sheep</span><br>
+<table>
+	<tr style="vertical-align:top;"> 
+		<td width="200"> 	
+			<button style="font-size: 16px;" onClick="addNewHerbi()">New sheep</button>
+			<button style="font-size: 16px;" onClick="addNewCarni()">New lion</button>
+			<button style="font-size: 16px;" onClick="Step()">Step</button>
+			<button style="font-size: 16px;" onClick="Run()">Run</button>
+		</td> 
+		<td>
+			<canvas id="canvasGlass" width="200" height="200" style="background-color: black;"></canvas>
+			<br>
+			Type: <span style="color:blue;" id="infoType">-</span><br>
+			Energy: <span style="color:blue;" id="infoEnergy">-</span><br>
+			Children: <span style="color:blue;" id="infoChildren">-</span><br>
+			Lifetime: <span style="color:blue;" id="infoLifetime">-</span><br>				
+			Generation: <span style="color:blue;" id="infoGeneration">-</span><br>				
+		</td>
+	</tr>
+</table>
+<table style="display: block; overflow-x: auto;">
+	<tr>
+		<td>
+			What selected animal see:<br>
+			<canvas id="canvasPlants" width="110" height="110" style="background-color: black;"></canvas>
+			&nbsp;
+			<canvas id="canvasHerbies" width="110" height="110" style="background-color: black;"></canvas>
+			&nbsp;
+			<canvas id="canvasCarnies" width="110" height="110" style="background-color: black;"></canvas>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Genes of selected animal:<br>
+			<canvas id="canvasGenesPlants" width="110" height="110" style="background-color: black;"></canvas>
+			&nbsp;
+			<canvas id="canvasGenesHerbies" width="110" height="110" style="background-color: black;"></canvas>
+			&nbsp;
+			<canvas id="canvasGenesCarnies" width="110" height="110" style="background-color: black;"></canvas>			
+<!--			<br>
+			<span style="color:blue;" id="infoGenes">-</span>-->
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" style="height: 60px;">
+			  <input type="range" id="plantGrowthRange" min="0" max="100" value="75">
+			  <label>Grass growth</label><br>
+			  <input type="range" id="energyTransmissionRange" min="0" max="100" value="25">
+			  <label>Energy transmission</label><br>
+		</td>
+	</tr>
+	<tr style="vertical-align:top;">
+		<td colspan="2">
+		     &nbsp;&nbsp;World lifetime: <span style="color:blue;" id="infoWorldLifetime">-</span><br>
+		     &nbsp;&nbsp;FPS: <span style="color:blue;" id="infoFPS">-</span><br>
+		</td>
+	</tr>
+	<tr>
+	<td>
+	<br>
+	&nbsp;&nbsp;Author: Aminadav <a href="mailto:behavior.evolution.game@gmail.com">behavior.evolution.game@gmail.com</a>
+	</td>
+	</tr>
+</table>   
+
+    	<br><a target="_blank" href="https://icons8.com/icon/16104/sheep">Sheep</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a><br>
+    	<a target="_blank" href="https://icons8.com/icon/18052/grass">Grass</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a><br>
+    	<a target="_blank" href="https://icons8.com/icon/NtLw1N1CHb4g/lion-full-body">Lion</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+<script>
+
+	const EMPTY = 0;
+	const PLANT = 1;
+	const HERBI = 2;
+	const CARNI = 3;
+	const BORDER = 4;
+
+	const PLANT_START_ENERGY = 1;
+	const HERBI_START_ENERGY = 10;
+	const CARNI_START_ENERGY = 10;
+	const circle_colors = ['#0000FF', '#00FF00', '#FFFFFF', '#FF0000', '#0000FF'];
+	const circle_type = [ "--", "grass", "sheep", "lion", "--" ];
+
+
+
+	// Get the canvas element
+	var canvas = document.getElementById("canvasField");
+	var canvasGlass = document.getElementById("canvasGlass");
+	var canvasPlants = document.getElementById("canvasPlants");
+	var canvasHerbies = document.getElementById("canvasHerbies");
+	var canvasCarnies = document.getElementById("canvasCarnies");
+			
+	var canvasGenesPlants = document.getElementById("canvasGenesPlants");
+	var canvasGenesHerbies = document.getElementById("canvasGenesHerbies");
+	var canvasGenesCarnies = document.getElementById("canvasGenesCarnies");
+
+	// Get the 2D rendering context for the canvas
+	var ctx = canvas.getContext("2d");
+	
+	var ctxGlass = canvasGlass.getContext("2d");
+	
+	var ctxPlants = canvasPlants.getContext("2d");
+	var ctxHerbies = canvasHerbies.getContext("2d");
+	var ctxCarnies = canvasCarnies.getContext("2d");
+	
+	var ctxGenesPlants = canvasGenesPlants.getContext("2d");
+	var ctxGenesHerbies = canvasGenesHerbies.getContext("2d");
+	var ctxGenesCarnies = canvasGenesCarnies.getContext("2d");
+
+	// Set the circle properties
+	var circles = [];
+	var radius = 10; // Circle radius
+	var actionType = 2;
+	var selectedCircle = null;
+	var selectedCircle_start = false;
+	var selectedCircle_start_time;
+	
+	var worldLifetime = 0;
+	var worldLifetime_start_time = new Date();
+	
+	var addNewHerbiAction = false;
+	var addNewCarniAction = false;
+
+	var plantGrowthSpeed;
+	var energyTransmission;
+	
+	var frame_count = 0;
+	var frame_count_start_time = new Date();
+	var FPS = 0;
+	
+	var stepMode = false;
+	var makeStep = false;
+	
+	var sheepImage = new Image();
+	sheepImage.src = "https://img.icons8.com/color/48/sheep.png"; //"icons8-sheep-48.png";
+
+	var plantImage = new Image();
+	plantImage.src = "https://img.icons8.com/color/48/grass.png"; //"icons8-grass-48.png";
+
+	var lionImage = new Image();
+	lionImage.src = "https://img.icons8.com/color/48/lion-full-body.png"; //"icons8-lion-48.png";
+
+	function findNearestCircle(x1, y1) {
+		var minDistance = Infinity;
+		var nearestCircle = null;
+
+		circles.forEach(function(circle) {
+			if(circle.elemType != PLANT) {
+				var distance = Math.sqrt(Math.pow(circle.x - x1, 2) + Math.pow(circle.y - y1, 2));
+				if (distance < minDistance) {
+					minDistance = distance;
+					nearestCircle = circle;
+				}	    	    
+			}
+		});
+
+		return nearestCircle;
+	}
+
+	// -------------------------------------------------------------
+	canvasGlass.addEventListener("click", function(event) {
+
+		var click_x = event.offsetX;
+		var click_y = event.offsetY;
+		var added = false;
+		var found = false;
+		
+		if(selectedCircle != null) {
+		
+			var x = selectedCircle.x + click_x - canvasGlass.width/2;
+			var y = selectedCircle.y + click_y - canvasGlass.height/2;
+		
+			selectedCircle = findNearestCircle(x, y);
+			if(stepMode) {
+				makeStep = true;
+			}
+		}		
+	 });
+	 
+	// ------------------------------------------------------------
+	canvas.addEventListener("click", function(event) {
+
+		var click_x = event.offsetX;
+		var click_y = event.offsetY;
+		var added = false;
+		var found = false;
+		
+		for (var i=0; i<circles.length; i++) {
+			if(circles[i].elemType != PLANT) {
+				found = true;
+				break;
+			}
+		}
+		
+		if(!found && !addNewHerbiAction && !addNewCarniAction) {
+			addNewHerbiAction = true;
+		}
+
+		if(addNewHerbiAction){
+			circles.push({
+			x: click_x,
+			y: click_y,
+			dx: Math.random() * 2 - 1,
+			dy: Math.random() * 2 - 1,
+			elemType: HERBI,
+			energy: HERBI_START_ENERGY,	
+			children: 0,
+			lifetime: 0,
+			lifetime_start_time: new Date(),
+			genes: Array(150).fill(0),
+			generation: 0
+			});
+			addNewHerbiAction = false;
+			added = true;
+			selectedCircle = circles[circles.length - 1];
+		}
+
+		if(addNewCarniAction){
+			circles.push({
+			x: click_x,
+			y: click_y,
+			dx: Math.random() * 2 - 1,
+			dy: Math.random() * 2 - 1,
+			elemType: CARNI,
+			energy: CARNI_START_ENERGY,	
+			children: 0,
+			lifetime: 0,
+			lifetime_start_time: new Date(),
+			genes: Array(150).fill(0),
+			generation: 0
+			}); 
+			addNewCarniAction = false;   
+			added = true;  
+			selectedCircle = circles[circles.length - 1];       
+		}   
+
+		document.getElementById("infoSelect").textContent = "Touch entity to select";
+		     
+		if(added) {
+			return;
+		}
+		
+		selectedCircle = findNearestCircle(click_x, click_y);
+		if(stepMode) {
+			makeStep = true;
+		}
+	 });
+
+
+	function formatMinutes(minutes) {
+
+		// Calculate days, hours, and remaining minutes
+		const days = Math.floor(minutes / (24 * 60));
+		const hours = Math.floor((minutes % (24 * 60)) / 60);
+		const remainingMinutes = minutes % 60;
+
+		// Build the formatted string
+		let formattedString = '';
+		if (days > 0) {
+			formattedString += days + ' d ' + hours + ' h ' + remainingMinutes + ' min';
+		}
+		else if (hours > 0) {
+		formattedString += hours + ' h ' + remainingMinutes + ' min';
+		}
+		else {
+			formattedString += remainingMinutes + ' min';
+		}
+
+		return formattedString.trim();
+	}
+	
+	function grid(ctx,canvas) {
+		ctx.lineWidth = 1; 
+		ctx.strokeStyle = 'white';
+		for(var i=0; i<5; i++) {
+			ctx.beginPath();
+			ctx.moveTo(canvas.width/2 - 4*radius, canvas.height/2 + 2*radius*(i-2));
+			ctx.lineTo(canvas.width/2 + 4*radius, canvas.height/2 + 2*radius*(i-2));
+			ctx.stroke(); 		
+		}
+		
+		for(var i=0; i<5; i++) {
+			ctx.beginPath();
+			ctx.moveTo(canvas.width/2 + 2*radius*(i-2), canvas.height/2 - 4*radius); 
+			ctx.lineTo(canvas.width/2 + 2*radius*(i-2), canvas.height/2 + 4*radius); 
+			ctx.stroke(); 		
+		}
+		//ctx.beginPath();
+		//ctx.arc(canvas.width/2, canvas.height/2, radius*6, 0, 2 * Math.PI);
+		//ctx.stroke();
+	}
+	
+	function grid_circles(ctx,canvas,shift) {
+		ctx.lineWidth = 1; 
+		ctx.strokeStyle = 'white';
+		
+		for(var i=0; i<5; i++) {
+			for(var j=0; j<5; j++) {
+
+				var x = canvas.width/2 + (2-i)*radius*2;
+				var y = canvas.height/2 + (2-j)*radius*2;
+
+				ctx.beginPath();
+				ctx.arc(x, y, radius, 0, 2 * Math.PI);
+				ctx.stroke();				
+
+				ctx.beginPath();
+				ctx.moveTo(x, y); 
+				ctx.lineTo(x + selectedCircle.genes[shift + i*5 + j]*radius, y + selectedCircle.genes[shift + i*5 + j + 1]*radius); 
+				ctx.stroke(); 
+			}
+		}
+	}
+	
+	function think(circle) {
+	
+		//console.log("dfg45");
+
+
+		if(circle === null) {
+			return false;
+		}
+
+		// ----------------- create 3 arrays with closest entities
+		
+		var plants = [];
+		var herbies = [];
+		var carnies = [];
+		
+		var big_radius = radius*6;
+		
+		circles.forEach(function(circle1) {
+		
+			var distance = Math.sqrt(Math.pow(circle.x - circle1.x, 2) + Math.pow(circle.y - circle1.y, 2));
+			if(distance <= big_radius) {
+				if(circle1.elemType === PLANT) {
+					plants.push(circle1);
+				}
+				else if(circle1.elemType == HERBI) {
+					herbies.push(circle1);
+				}
+				else { // carni
+					carnies.push(circle1);
+				}
+			}
+		});
+		
+		//console.log(circle);
+		//console.log(plants);
+		//console.log(herbies);
+		//console.log(carnies);
+		
+		// build 5x5 array and fill it
+		
+		// Create a 5x5 array filled with zeros
+		let plants1 = [];
+		for (let i=0; i<5; i++) {
+			plants1.push(Array(5).fill(0));
+		}
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				for(var k=0; k<plants.length; k++) {
+					var x = circle.x + 2*radius*(2-i);
+					var y = circle.y + 2*radius*(2-j);
+									
+					var distance = Math.sqrt(Math.pow(x - plants[k].x, 2) + Math.pow(y - plants[k].y, 2));
+					
+					if(distance < radius) {
+						plants1[i][j] = 1;
+					}
+				}
+			}
+		}
+		
+		//console.log(plants1);
+		//stepMode = true;
+
+		// Create a 5x5 array filled with zeros
+		let herbies1 = [];
+		for (let i=0; i<5; i++) {
+			herbies1.push(Array(5).fill(0));
+		}
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				for(var k=0; k<herbies.length; k++) {
+					var x = circle.x + 2*radius*(2-i);
+					var y = circle.y + 2*radius*(2-j);
+									
+					var distance = Math.sqrt(Math.pow(x - herbies[k].x, 2) + Math.pow(y - herbies[k].y, 2));
+					
+					if(distance < radius) {
+						herbies1[i][j] = 1;
+					}
+				}
+			}
+		}
+
+
+		// Create a 5x5 array filled with zeros
+		let carnies1 = [];
+		for (let i=0; i<5; i++) {
+			carnies1.push(Array(5).fill(0));
+		}
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				for(var k=0; k<carnies.length; k++) {
+					var x = circle.x + 2*radius*(2-i);
+					var y = circle.y + 2*radius*(2-j);
+									
+					var distance = Math.sqrt(Math.pow(x - carnies[k].x, 2) + Math.pow(y - carnies[k].y, 2));
+					
+					if(distance < radius) {
+						carnies1[i][j] = 1;
+					}
+				}
+			}
+		}
+
+		// check with genes
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(carnies1[i][j] === 1) { 
+					
+					if(circle.genes[100 + i*5 + j] != 0 || circle.genes[100 + i*5 + j + 1] != 0) {
+						circle.dx = circle.genes[i*5 + j];
+						circle.dy = circle.genes[i*5 + j + 1];
+						return true;
+					}
+				}
+			}		
+		}
+
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(herbies1[i][j] === 1) { 
+					
+					if(circle.genes[50 + i*5 + j] != 0 || circle.genes[50 + i*5 + j + 1] != 0) {
+						circle.dx = circle.genes[50 + i*5 + j];
+						circle.dy = circle.genes[50 + i*5 + j + 1];
+						return true;
+					}				
+				}
+			}		
+		}
+
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(plants1[i][j] === 1) { 
+					
+					if(circle.genes[i*5 + j] != 0 || circle.genes[i*5 + j + 1] != 0) {
+						circle.dx = circle.genes[100 + i*5 + j];
+						circle.dy = circle.genes[100 + i*5 + j + 1];
+						return true;
+					}				
+				}
+			}		
+		}
+		
+		return false;
+	} // function think(circle)
+
+
+	function drawPlant(ctx, x, y) {
+		ctx.drawImage(plantImage, x - plantImage.width/4, y - plantImage.height/4, plantImage.width/2, plantImage.height/2);
+	}
+	
+	function drawHerbi(ctx, x, y) {
+		ctx.drawImage(sheepImage, x - sheepImage.width/4, y - sheepImage.height/4, sheepImage.width/2, sheepImage.height/2);
+	}
+	
+	function drawCarni(ctx, x, y) {
+		ctx.drawImage(lionImage, x - lionImage.width/4, y - lionImage.height/4, lionImage.width/2, lionImage.height/2);
+	}	
+	
+	function clearCanvas(ctx) {
+		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	}
+	
+	function arc(ctx, x, y, radius, color) {
+		ctx.strokeStyle = color; 
+		ctx.beginPath();
+		ctx.arc(x, y, radius, 0, 2 * Math.PI);	
+		ctx.stroke();		
+	}
+
+	function vision(circle) {
+	
+		// Clear the canvas
+		
+		clearCanvas(ctxGlass);
+		
+		clearCanvas(ctxPlants);
+		clearCanvas(ctxHerbies);
+		clearCanvas(ctxCarnies);
+		
+		clearCanvas(ctxGenesPlants);
+		clearCanvas(ctxGenesHerbies);
+		clearCanvas(ctxGenesCarnies);
+
+		if(circle === null) {
+			return;
+		}
+		
+		// ----------------- draw on canvasGlass
+		
+		// draw
+		circles.forEach(function(circle1) {
+			if(circle1.elemType === PLANT) {
+				drawPlant(ctxGlass,circle1.x - circle.x + canvasGlass.width/2,circle1.y - circle.y + canvasGlass.height/2);
+
+			}
+		});
+		
+		circles.forEach(function(circle1) {
+			if(circle1.elemType === HERBI) {
+				drawHerbi(ctxGlass,circle1.x - circle.x + canvasGlass.width/2, circle1.y - circle.y + canvasGlass.height/2);
+			}
+		});
+
+		circles.forEach(function(circle1) {
+			if(circle1.elemType === CARNI) {
+				drawCarni(ctxGlass,circle1.x - circle.x + canvasGlass.width/2, circle1.y - circle.y + canvasGlass.height/2);
+			}
+		});			
+
+		// ----------------- draw border
+		ctxGlass.fillStyle = '#ea7e5d';
+		
+		// left
+		var xb = canvasGlass.width/2 - circle.x;		
+		if(xb>0 && xb<canvasGlass.width) {
+			ctxGlass.fillRect(0,0,xb,canvasGlass.height);
+		}
+		
+		// right
+		var xb = canvasGlass.width/2 + (canvas.width - circle.x);		
+		if(xb>0 && xb<canvasGlass.width) {
+			ctxGlass.fillRect(xb,0,canvasGlass.width-xb,canvasGlass.height);
+		}
+
+		// top
+		var yb = canvasGlass.height/2 - circle.y;		
+		if(yb>0 && yb<canvasGlass.height) {
+			ctxGlass.fillRect(0,0,canvasGlass.width,yb);
+		}
+							
+		// bottom
+		var yb = canvasGlass.height/2 + (canvas.height - circle.y);		
+		if(yb>0 && yb<canvasGlass.height) {
+			ctxGlass.fillRect(0,yb,canvasGlass.width,canvasGlass.height-yb);
+		}
+		
+		// ----------------- show grid
+		
+		grid(ctxGlass,canvasGlass);
+		
+		grid(ctxPlants,canvasPlants);
+		grid(ctxHerbies,canvasHerbies);
+		grid(ctxCarnies,canvasCarnies);
+		
+		grid_circles(ctxGenesPlants,canvasGenesPlants,0);
+		grid_circles(ctxGenesHerbies,canvasGenesHerbies,50);
+		grid_circles(ctxGenesCarnies,canvasGenesCarnies,100);
+		
+		// ----------------- draw selected circle
+		
+		if(circle.elemType === HERBI) {
+			drawHerbi(ctxGlass,canvasGlass.width/2, canvasGlass.height/2);
+		}
+		else if(circle.elemType === CARNI) {
+			drawCarni(ctxGlass, canvasGlass.width/2, canvasGlass.height/2);
+		}
+		
+		// ----------------- create 3 arrays with closest entities
+		
+		var plants = [];
+		var herbies = [];
+		var carnies = [];
+		
+		var big_radius = radius*6;
+		
+		circles.forEach(function(circle1) {
+		
+			var distance = Math.sqrt(Math.pow(circle.x - circle1.x, 2) + Math.pow(circle.y - circle1.y, 2));
+			if(distance <= big_radius) {
+				if(circle1.elemType === PLANT) {
+					plants.push(circle1);
+				}
+				else if(circle1.elemType == HERBI) {
+					herbies.push(circle1);
+				}
+				else { // carni
+					carnies.push(circle1);
+				}
+			}
+		});
+		
+		//console.log(circle);
+		//console.log(plants);
+		//console.log(herbies);
+		//console.log(carnies);
+		
+		// build 5x5 array and fill it
+		
+		// Create a 5x5 array filled with zeros
+		let plants1 = [];
+		for (let i=0; i<5; i++) {
+			plants1.push(Array(5).fill(0));
+		}
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				for(var k=0; k<plants.length; k++) {
+					var x = circle.x + 2*radius*(2-i);
+					var y = circle.y + 2*radius*(2-j);
+									
+					var distance = Math.sqrt(Math.pow(x - plants[k].x, 2) + Math.pow(y - plants[k].y, 2));
+					
+					if(distance < radius) {
+						plants1[i][j] = 1;
+					}
+				}
+			}
+		}
+		
+		//console.log(plants1);
+		//stepMode = true;
+
+		// Create a 5x5 array filled with zeros
+		let herbies1 = [];
+		for (let i=0; i<5; i++) {
+			herbies1.push(Array(5).fill(0));
+		}
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				for(var k=0; k<herbies.length; k++) {
+					var x = circle.x + 2*radius*(2-i);
+					var y = circle.y + 2*radius*(2-j);
+									
+					var distance = Math.sqrt(Math.pow(x - herbies[k].x, 2) + Math.pow(y - herbies[k].y, 2));
+					
+					if(distance < radius) {
+						herbies1[i][j] = 1;
+					}
+				}
+			}
+		}
+
+
+		// Create a 5x5 array filled with zeros
+		let carnies1 = [];
+		for (let i=0; i<5; i++) {
+			carnies1.push(Array(5).fill(0));
+		}
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				for(var k=0; k<carnies.length; k++) {
+					var x = circle.x + 2*radius*(2-i);
+					var y = circle.y + 2*radius*(2-j);
+									
+					var distance = Math.sqrt(Math.pow(x - carnies[k].x, 2) + Math.pow(y - carnies[k].y, 2));
+					
+					if(distance < radius) {
+						carnies1[i][j] = 1;
+					}
+				}
+			}
+		}
+
+		
+		// ----------------- draw these arrays on canvasPlants etc.
+	
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {
+				if(plants1[i][j] === 1) {
+					var x = canvasPlants.width/2 + 2*radius*(2-i);
+					var y = canvasPlants.height/2 + 2*radius*(2-j);	
+					drawPlant(ctxPlants,x,y);	
+				}			
+			}
+		}		
+	
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {
+				if(herbies1[i][j] === 1) {
+					var x = canvasHerbies.width/2 + 2*radius*(2-i);
+					var y = canvasHerbies.height/2 + 2*radius*(2-j);
+					drawHerbi(ctxHerbies,x,y);		
+				}			
+			}
+		}	
+	
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {
+				if(carnies1[i][j] === 1) {
+					var x = canvasCarnies.width/2 + 2*radius*(2-i);
+					var y = canvasCarnies.height/2 + 2*radius*(2-j);
+					drawCarni(ctxCarnies,x,y);		
+				}			
+			}
+		}	
+
+
+
+		// check with genes
+		
+		var found,fi,fj,fshift = false;
+		
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(carnies1[i][j] === 1) { 
+					
+					if(circle.genes[100 + i*5 + j] != 0 || circle.genes[100 + i*5 + j + 1] != 0) {
+						//circle.dx = circle.genes[i*5 + j];
+						//circle.dy = circle.genes[i*5 + j + 1];
+						found = true; fi=i; fj=j; fshift=100;
+						break;
+					}
+				}
+			}		
+			if(found) {
+				break;
+			}
+		}
+
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(herbies1[i][j] === 1) { 
+					
+					if(circle.genes[50 + i*5 + j] != 0 || circle.genes[50 + i*5 + j + 1] != 0) {
+						//circle.dx = circle.genes[50 + i*5 + j];
+						//circle.dy = circle.genes[50 + i*5 + j + 1];
+						found =  true; fi=i; fj=j; fshift=50;
+						break;
+					}				
+				}
+			}		
+			if(found) {
+				break;
+			}
+		}
+
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(plants1[i][j] === 1) { 
+					
+					if(circle.genes[i*5 + j] != 0 || circle.genes[i*5 + j + 1] != 0) {
+						//circle.dx = circle.genes[100 + i*5 + j];
+						//circle.dy = circle.genes[100 + i*5 + j + 1];
+						found =  true; fi=i; fj=j; fshift=0;
+						break;
+					}				
+				}
+			}		
+			if(found) {
+				break;
+			}
+		}
+		
+		if(found) {
+		
+			// draw red arc on Genes Canvas
+
+			var canvas1;
+			
+			if(fshift===0){
+				canvas1 = canvasGenesPlants;
+			}
+			else if(fshift===50) {
+				canvas1 = canvasGenesHerbies;
+			}
+			else if(fshift===100) {
+				canvas1 = canvasGenesCarnies;
+			}
+			
+			var x = canvas1.width/2 + (2-fi)*radius*2;
+			var y = canvas1.height/2 + (2-fj)*radius*2;
+
+
+			ctx1 = canvas1.getContext("2d");
+			ctx1.strokeStyle = 'red';
+			ctx1.beginPath();
+			ctx1.arc(x, y, radius, 0, 2 * Math.PI);
+			ctx1.stroke();	
+			
+			//-----------------
+			
+			var ret = think(circle);
+			console.log("think returns "+ret);
+			if(ret === false) {
+				// sometimes change direction
+				//console.log("678");
+				if(Math.random() < 0.01) {
+					//console.log("dfg");
+					//circle.dx = Math.random() * 2 - 1;
+					//circle.dy = Math.random() * 2 - 1;
+				}				
+			}           
+			
+
+		}
+
+	} // function vision(circle)
+
+	function selectedCircleShowInfo() {
+	
+		if(selectedCircle === null){
+			document.getElementById("infoType").textContent = "-";
+			document.getElementById("infoEnergy").textContent = "-";	
+			document.getElementById("infoChildren").textContent = "-";
+			document.getElementById("infoLifetime").textContent = "-";
+			document.getElementById("infoGeneration").textContent = "-";
+			//document.getElementById("infoGenes").textContent = "-";
+		}
+		else {
+			arc(ctx, selectedCircle.x, selectedCircle.y, radius*2, 'lightblue');
+			
+			document.getElementById("infoType").textContent = circle_type[selectedCircle.elemType];
+			document.getElementById("infoEnergy").textContent = Math.round(selectedCircle.energy).toString();
+			document.getElementById("infoChildren").textContent = Math.round(selectedCircle.children).toString();
+			document.getElementById("infoLifetime").textContent = formatMinutes(Math.round(selectedCircle.lifetime/60));
+			document.getElementById("infoGeneration").textContent = selectedCircle.generation;
+			
+			//---
+/*			
+			var str = "\n";
+			
+			for (var i=0; i<5; i++) {
+				var str1 = "";		
+				for (var j=0; j<5; j++) {		
+					str1 += "["+selectedCircle.genes[i*5 + j].toFixed(1)+","+selectedCircle.genes[i*5 + j + 1].toFixed(1)+"]  ";
+				}		
+				str += str1 + "\n";
+			}
+			str += "\n"
+
+			for (var i=0; i<5; i++) {
+				var str1 = "";		
+				for (var j=0; j<5; j++) {		
+					str1 += "["+selectedCircle.genes[50 + i*5 + j].toFixed(1)+","+selectedCircle.genes[50 + i*5 + j + 1].toFixed(1)+"]  ";
+				}		
+				str += str1 + "\n";
+			}
+			str += "\n"
+
+			for (var i=0; i<5; i++) {
+				var str1 = "";		
+				for (var j=0; j<5; j++) {		
+					str1 += "["+selectedCircle.genes[100 + i*5 + j].toFixed(1)+","+selectedCircle.genes[100 + i*5 + j + 1].toFixed(1)+"]  ";
+				}		
+				str += str1 + "\n";
+			}
+			str += "\n"
+
+			document.getElementById("infoGenes").textContent = str;
+*/		}
+	}
+
+	function calcLife() {
+
+		// plant growth
+		if(Math.random() < 0.6*(plantGrowthSpeed/100)) {
+		    circles.push({
+			x: Math.random() * (canvas.width - radius * 2) + radius,
+			y: Math.random() * (canvas.height - radius * 2) + radius,
+			elemType: PLANT,
+			energy: PLANT_START_ENERGY
+		    });           
+		}
+
+		// herbi feeding        
+		circles.forEach(function(circle1) {
+			if(circle1.elemType === HERBI) {
+				circles.forEach(function(circle2) {
+					if(circle1.elemType === HERBI && circle2.elemType === PLANT) {
+						var distance = Math.sqrt(Math.pow(circle1.x - circle2.x, 2) + Math.pow(circle1.y - circle2.y, 2));
+						if (distance < radius*2) {
+							circle1.energy += circle2.energy;
+							circles.splice(circles.indexOf(circle2),1);
+							// herbi birth
+							if(circle1.energy > HERBI_START_ENERGY*2){
+								circle1.energy -= HERBI_START_ENERGY;
+								circle1.children += 1;
+								circles.push({
+									x: circle1.x,
+									y: circle1.y,
+									dx: Math.random() * 2 - 1,
+									dy: Math.random() * 2 - 1,
+									elemType: HERBI,
+									energy: HERBI_START_ENERGY,	
+									children: 0,
+									lifetime: 0,
+									lifetime_start_time: new Date(),
+									genes: [...circle1.genes],
+									generation: circle1.generation + 1
+								    });	
+								//mutate
+								if(Math.random() < 0.8) {
+									var pos = Math.floor(Math.random() * 74);
+									circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
+									circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
+								}
+							}
+						}	
+					}
+	1				});
+			}
+
+		});
+		
+		// carni eating
+		circles.forEach(function(circle1) {
+			if(circle1.elemType === CARNI) {
+				circles.forEach(function(circle2) {
+					if(circle1.elemType === CARNI && circle2.elemType === HERBI) {
+						var distance = Math.sqrt(Math.pow(circle1.x - circle2.x, 2) + Math.pow(circle1.y - circle2.y, 2));
+						if (distance < radius*2) {
+							circle1.energy += circle2.energy * energyTransmission;
+							if(selectedCircle === circle2) {
+								selectedCircle = null;
+							}
+							circles.splice(circles.indexOf(circle2),1);
+						}	
+					}
+	1				});
+			}
+		});		
+		
+		// carni birth
+		circles.forEach(function(circle) {
+			if(circle.elemType === CARNI) {				
+				if(circle.energy > CARNI_START_ENERGY*2){
+					circle.energy -= CARNI_START_ENERGY;
+					circle.children += 1;
+					circles.push({
+						x: circle.x,
+						y: circle.y,
+						dx: Math.random() * 2 - 1,
+						dy: Math.random() * 2 - 1,
+						elemType: CARNI,
+						energy: CARNI_START_ENERGY,	
+						children: 0,
+						lifetime: 0,
+						lifetime_start_time: new Date(),
+						genes: [...circle.genes],
+						generation: circle.generation + 1
+					    });	
+					//mutate
+					if(Math.random() < 0.8) {
+						var pos = Math.floor(Math.random() * 74);
+						circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
+						circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
+					}
+				}
+			}
+		});
+
+		circles.forEach(function(circle) {
+			if(circle.energy < 0) {
+				if(selectedCircle === circle) {
+					selectedCircle = null;
+				}
+				circles.splice(circles.indexOf(circle),1);	
+			}
+		});
+
+	}
+	
+	function countValues() {
+
+		// count FPS
+		frame_count += 1;
+		var current_time = new Date();
+		var diff = current_time.getTime() - frame_count_start_time.getTime(); 
+		if(diff > 1000) {
+			FPS = frame_count / diff * 1000;
+			frame_count_start_time = new Date();
+			frame_count = 0;
+		}
+		
+		// count worldLifetime in seconds
+		var current_time = new Date();
+		var diff = current_time.getTime() - worldLifetime_start_time.getTime(); 
+		if(diff > 1000) {
+			worldLifetime_start_time = new Date();
+			worldLifetime += 1;
+		}
+		
+		// reselect auto
+		if(selectedCircle === null) {
+			
+			if(!selectedCircle_start) {
+				selectedCircle_start = true;
+				selectedCircle_start_time = new Date();
+			}
+			else {
+				var currentTime = new Date();
+				if(currentTime.getTime() - selectedCircle_start_time.getTime() > 2000) {
+					selectedCircle_start = false;
+					// select random
+					var x = radius + Math.random() * (canvas.width - radius);
+					var y = radius + Math.random() * (canvas.height - radius);
+					selectedCircle = findNearestCircle(x,y);
+				}
+			}
+		}
+	}
+
+	function moveCircles() {
+	
+		// Move the circles checking the borders  
+		circles.forEach(function(circle) {
+		
+			if(circle.elemType === HERBI || circle.elemType === CARNI){
+
+				// lifetime in seconds
+				var current_time = new Date();
+				var diff = current_time.getTime() - circle.lifetime_start_time.getTime(); 
+				if(diff > 1000) {
+					circle.lifetime_start_time = new Date();
+					circle.lifetime += 1;
+				}
+
+				// energy
+				circle.energy -= 0.002;
+
+				var ret = think(circle);
+				//console.log("think returns "+ret);
+				if(ret === false) {
+					// sometimes change direction
+					//console.log("678");
+					if(Math.random() < 0.01) {
+						//console.log("dfg");
+						circle.dx = Math.random() * 2 - 1;
+						circle.dy = Math.random() * 2 - 1;
+					}				
+				}           
+				var x1 = circle.x + circle.dx;
+				var y1 = circle.y + circle.dy;
+				
+				if (x1+radius <= canvas.width && x1-radius > 0 && y1+radius <= canvas.height && y1-radius > 0) {
+					var intersect = false;
+					var i = circles.indexOf(circle);
+
+					for (var j=0; j<circles.length; j++) {
+						if(j == i) {
+							continue;
+						}
+						if(circles[j].elemType === circle.elemType) {
+							var distance0 = Math.sqrt(Math.pow(circle.x - circles[j].x, 2) + Math.pow(circle.y - circles[j].y, 2));
+							var distance = Math.sqrt(Math.pow(x1 - circles[j].x, 2) + Math.pow(y1 - circles[j].y, 2));
+							if (distance < radius*2 && distance0 > radius*2) {
+								intersect = true;
+								break;			
+							}				
+						}
+					}
+					if(!intersect) {
+						circle.x = x1;
+						circle.y = y1;
+					}
+				}
+			}
+		});
+	}
+	
+	// ---------------------------------------------------------------------------------------------------------
+	// Function to draw and move circles
+	// ---------------------------------------------------------------------------------------------------------
+
+	function drawCircles() {
+	
+		if(stepMode && !makeStep) {
+			// Request the next animation frame
+			requestAnimationFrame(drawCircles);
+			return;
+		}
+		makeStep = false;
+		
+		// calculations
+		countValues();
+		calcLife();
+
+		// Clear the canvas
+		clearCanvas(ctx);
+
+		// show info
+		document.getElementById("infoWorldLifetime").textContent = formatMinutes(Math.round(worldLifetime/60));
+		document.getElementById("infoFPS").textContent = Math.round(FPS).toString();
+		
+		selectedCircleShowInfo();
+
+		vision(selectedCircle);
+		
+		// draw
+		circles.forEach(function(circle) {
+			if(circle.elemType === PLANT) {
+				drawPlant(ctx,circle.x,circle.y);
+			}
+		});
+		
+		circles.forEach(function(circle) {
+			if(circle.elemType === HERBI) {
+				drawHerbi(ctx,circle.x,circle.y);
+			}
+		});
+
+		// draw carni
+		circles.forEach(function(circle) {
+			if(circle.elemType === CARNI) {
+				drawCarni(ctx,circle.x,circle.y);
+			}
+		});
+		
+		moveCircles();
+		
+		// Request the next animation frame
+		requestAnimationFrame(drawCircles);
+	}
+
+	// Start the animation loop
+	drawCircles();
+
+	// Function to set the value of selectedColor variable
+	function setActionType(action_type) {
+	    actionType = action_type;
+	}
+
+        var rangeInput = document.getElementById("plantGrowthRange");
+        plantGrowthSpeed = parseInt(rangeInput.value);
+	rangeInput.addEventListener("input", function() {
+		plantGrowthSpeed = parseInt(rangeInput.value);
+	});
+
+        var range2Input = document.getElementById("energyTransmissionRange");
+        energyTransmission = parseInt(range2Input.value)/100/5;
+	range2Input.addEventListener("input", function() {
+		energyTransmission = parseInt(range2Input.value)/100/5;
+	});
+
+	function addNewHerbi() {
+		addNewHerbiAction = true;
+		addNewCarniAction = false;
+		document.getElementById("infoSelect").textContent = "Touch field to add new sheep";
+	}               
+
+	function addNewCarni() {
+		addNewHerbiAction = false;
+		addNewCarniAction = true;
+		document.getElementById("infoSelect").textContent = "Touch field to add new lion";
+	}        
+	
+	function Step() {
+		if(!stepMode) {
+			stepMode = true;
+		}
+		else {
+			makeStep = true;
+		}
+	}
+	
+	function Run() {
+		stepMode = false;
+	
+	}     
+
+
+	  
+</script>  
+</body>
+</html>
