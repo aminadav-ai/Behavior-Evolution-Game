@@ -120,11 +120,11 @@ You can select an individual animal and get detailed information about it below.
 	</td>
 	</tr>
 </table>   
-<footer>
+
     	<br><a target="_blank" href="https://icons8.com/icon/16104/sheep">Sheep</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a><br>
     	<a target="_blank" href="https://icons8.com/icon/18052/grass">Grass</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a><br>
     	<a target="_blank" href="https://icons8.com/icon/NtLw1N1CHb4g/lion-full-body">Lion</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-    </footer>
+
 <script>
 
 	const EMPTY = 0;
@@ -959,7 +959,7 @@ You can select an individual animal and get detailed information about it below.
 									generation: circle1.generation + 1
 								    });	
 								//mutate
-								if(Math.random() < 0.9) {
+								if(Math.random() < 0.8) {
 									var pos = Math.floor(Math.random() * 74);
 									circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
 									circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
@@ -967,7 +967,7 @@ You can select an individual animal and get detailed information about it below.
 							}
 						}	
 					}
-					});
+	1				});
 			}
 
 		});
@@ -1010,7 +1010,7 @@ You can select an individual animal and get detailed information about it below.
 						generation: circle.generation + 1
 					    });	
 					//mutate
-					if(Math.random() < 0.9) {
+					if(Math.random() < 0.8) {
 						var pos = Math.floor(Math.random() * 74);
 						circles[circles.length-1].genes[pos*2] = Math.random() * 2 - 1;
 						circles[circles.length-1].genes[pos*2+1] = Math.random() * 2 - 1;
