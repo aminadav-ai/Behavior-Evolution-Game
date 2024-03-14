@@ -603,7 +603,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		circles.forEach(function(circle1) {
 			if(circle1.elemType === PLANT) {
 				drawPlant(ctxGlass,circle1.x - circle.x + canvasGlass.width/2,circle1.y - circle.y + canvasGlass.height/2);
-
 			}
 		});
 		
@@ -667,7 +666,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			drawCarni(ctxGlass, canvasGlass.width/2, canvasGlass.height/2);
 		}
 		
-		// ----------------- create 3 arrays with closest entities
+		// ----------------- select closest entities
 		
 		var plants = [];
 		var herbies = [];
@@ -691,17 +690,14 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 		});
 		
-		//console.log(circle);
-		//console.log(plants);
-		//console.log(herbies);
-		//console.log(carnies);
-		
-		// build 5x5 array and fill it
-		
-		// Create a 5x5 array filled with zeros
-		let plants1 = [];
+		var plants1 = [];
+		var herbies1 = [];
+		var carnies1 = [];
+
 		for (let i=0; i<5; i++) {
-			plants1.push(Array(5).fill(0));
+			plants1[i].push(Array(5).fill(0));
+			herbies1[i].push(Array(5).fill(0));
+			carnies1[i].push(Array(5).fill(0));
 		}
 		
 		for (var i=0; i<5; i++) {		
@@ -719,15 +715,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 		}
 		
-		//console.log(plants1);
-		//stepMode = true;
-
-		// Create a 5x5 array filled with zeros
-		let herbies1 = [];
-		for (let i=0; i<5; i++) {
-			herbies1.push(Array(5).fill(0));
-		}
-		
 		for (var i=0; i<5; i++) {		
 			for (var j=0; j<5; j++) {		
 				for(var k=0; k<herbies.length; k++) {
@@ -743,13 +730,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 		}
 
-
-		// Create a 5x5 array filled with zeros
-		let carnies1 = [];
-		for (let i=0; i<5; i++) {
-			carnies1.push(Array(5).fill(0));
-		}
-		
 		for (var i=0; i<5; i++) {		
 			for (var j=0; j<5; j++) {		
 				for(var k=0; k<carnies.length; k++) {
@@ -764,7 +744,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				}
 			}
 		}
-
 		
 		// ----------------- draw these arrays on canvasPlants etc.
 	
@@ -798,8 +777,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 		}	
 
-
-
 		// check with genes
 		
 		var found,fi,fj,fshift = false;
@@ -809,8 +786,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				if(carnies1[i][j] === 1) { 
 					
 					if(circle.genes[100 + (i*5 + j)*2] != 0 || circle.genes[100 + (i*5 + j)*2 + 1] != 0) {
-						//circle.dx = circle.genes[i*5 + j];
-						//circle.dy = circle.genes[i*5 + j + 1];
 						found = true; fi=i; fj=j; fshift=100;
 						break;
 					}
@@ -826,8 +801,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				if(herbies1[i][j] === 1) { 
 					
 					if(circle.genes[50 + (i*5 + j)*2] != 0 || circle.genes[50 + (i*5 + j)*2 + 1] != 0) {
-						//circle.dx = circle.genes[50 + i*5 + j];
-						//circle.dy = circle.genes[50 + i*5 + j + 1];
 						found =  true; fi=i; fj=j; fshift=50;
 						break;
 					}				
@@ -843,8 +816,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				if(plants1[i][j] === 1) { 
 					
 					if(circle.genes[(i*5 + j)*2] != 0 || circle.genes[(i*5 + j)*2 + 1] != 0) {
-						//circle.dx = circle.genes[100 + i*5 + j];
-						//circle.dy = circle.genes[100 + i*5 + j + 1];
 						found =  true; fi=i; fj=j; fshift=0;
 						break;
 					}				
