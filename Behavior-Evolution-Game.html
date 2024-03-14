@@ -222,9 +222,9 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	//----------------------------------  mutate -------------------------------------
 
 	function mutate(circle) {
-		if(Math.random() < 0.9) {
+		if(Math.random() < 0.8) {
 			var pos = Math.floor(Math.random() * 74);
-			if(Math.random() < 0.9) {
+			if(Math.random() < 0.8) {
 				circle.genes[pos*2] = getMoveRandomNumber()
 				circle.genes[pos*2+1] = getMoveRandomNumber()
 			}
@@ -409,16 +409,21 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		}
 	}
 	
+	//--------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	//
+	//						think
+	//
+	//--------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	
 	function think(circle) {
 	
-		//console.log("dfg45");
-
-
 		if(circle === null) {
 			return false;
 		}
 
-		// ----------------- create 3 arrays with closest entities
+		// ----------------- select closest entities
 		
 		var plants = [];
 		var herbies = [];
@@ -442,15 +447,12 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 		});
 		
-		//console.log(circle);
-		//console.log(plants);
-		//console.log(herbies);
-		//console.log(carnies);
+		//-------------------------- prepare animal vision
 		
-		// build 5x5 array and fill it
+		var plants1 = [];
+		var herbies1 = [];
+		var carnies1 = [];
 		
-		// Create a 5x5 array filled with zeros
-		let plants1 = [];
 		for (let i=0; i<5; i++) {
 			plants1.push(Array(5).fill(0));
 		}
@@ -470,11 +472,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 		}
 		
-		//console.log(plants1);
-		//stepMode = true;
-
-		// Create a 5x5 array filled with zeros
-		let herbies1 = [];
 		for (let i=0; i<5; i++) {
 			herbies1.push(Array(5).fill(0));
 		}
@@ -495,8 +492,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		}
 
 
-		// Create a 5x5 array filled with zeros
-		let carnies1 = [];
 		for (let i=0; i<5; i++) {
 			carnies1.push(Array(5).fill(0));
 		}
@@ -1110,17 +1105,17 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				circle.energy -= 0.002;
 
 				var ret = think(circle);
-				/*if(circle === selectedCircle) {
+				if(circle === selectedCircle) {
 					console.log("think returns "+ret+", dx="+circle.dx+", dy="+circle.dy);
-				}*/
+				}
 				if(ret === false) {
 					// sometimes change direction
 					if(Math.random() < 0.01) {
 						circle.dx = getMoveRandomNumber();
 						circle.dy = getMoveRandomNumber();
-						/*if(circle === selectedCircle) {
+						if(circle === selectedCircle) {
 							console.log("change direction to random, dx="+circle.dx+", dy="+circle.dy);
-						}*/
+						}
 					}				
 				}           
 				var x1 = circle.x + circle.dx;
