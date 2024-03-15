@@ -195,9 +195,8 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	var ctxGenesHerbies = canvasGenesHerbies.getContext("2d");
 	var ctxGenesCarnies = canvasGenesCarnies.getContext("2d");
 
-	// Set the circle properties
 	var circles = [];
-	var radius = 10; // Circle radius
+	var radius = 10;
 	var actionType = 2;
 	var selectedCircle = null;
 	var selectedCircle_start = false;
@@ -219,37 +218,30 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	var stepMode = false;
 	var makeStep = false;
 	
-	var sheepImage = new Image();
-	sheepImage.src = "https://img.icons8.com/color/48/sheep.png";
-
-	var plantImage = new Image();
-	plantImage.src = "https://img.icons8.com/color/48/grass.png";
-
-	var lionImage = new Image();
-	lionImage.src = "https://img.icons8.com/color/48/lion-full-body.png";
+	var sheepImage = new Image();	sheepImage.src = "https://img.icons8.com/color/48/sheep.png";
+	var plantImage = new Image();	plantImage.src = "https://img.icons8.com/color/48/grass.png";
+	var lionImage = new Image();	lionImage.src =  "https://img.icons8.com/color/48/lion-full-body.png";
 	
 	
-	//----------------------------------  getMoveRandomNumber -------------------------------------
 	
-	function getMoveRandomNumber() {
+	//----------------------------------  randomPointInUnitCircle -------------------------------------
 
-		let randomNumber = Math.random();
-
-		if (randomNumber < 0.5) {
-			randomNumber -= 1;
-		}
-
-		return randomNumber;
-	}	
+	function randomPointInUnitCircle() {
+		var angle = Math.random() * 2 * Math.PI;
+		var x = Math.cos(angle);
+		var y = Math.sin(angle);
+	return {x: x, y: y};
+	}
 	
 	//----------------------------------  mutate -------------------------------------
 
 	function mutate(circle) {
-		if(Math.random() < 0.4) {
+		if(Math.random() < 0.5) {
 			var pos = Math.floor(Math.random() * 74);
 			if(Math.random() < 0.9) {
-				circle.genes[pos*2] = getMoveRandomNumber()
-				circle.genes[pos*2+1] = getMoveRandomNumber()
+				var p = randomPointInUnitCircle();
+				circle.genes[pos*2] = p.x;
+				circle.genes[pos*2+1] = p.y;
 			}
 			else {
 				circle.genes[pos*2] = 0;
@@ -405,9 +397,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			ctx.lineTo(canvas.width/2 + 2*radius*(i-2), canvas.height/2 + 4*radius); 
 			ctx.stroke(); 		
 		}
-		//ctx.beginPath();
-		//ctx.arc(canvas.width/2, canvas.height/2, radius*6, 0, 2 * Math.PI);
-		//ctx.stroke();
 	}
 	
 	function grid_circles(ctx,canvas,shift) {
@@ -431,7 +420,71 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 		}
 	}
+
+	//------------------------------- fill_arr --------------------------------------
 	
+	function fill_arr(arr1,arr2,circle1) {
+		for (let i = 0; i < 5; i++) {
+			arr2[i] = [];
+			for (let j = 0; j < 5; j++) {
+				arr2[i][j] = 0;
+			}
+		}
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				for(var k=0; k<arr1.length; k++) {
+					var x = circle1.x + 2*radius*(2-i);
+					var y = circle1.y + 2*radius*(2-j);
+									
+					var distance = Math.sqrt(Math.pow(x - arr1[k].x, 2) + Math.pow(y - arr1[k].y, 2));
+					
+					if(distance < radius) {
+						arr2[i][j] = 1;
+					}
+				}
+			}
+		}
+	} 
+
+	//--------------------------- select_closest_entities -----------------------------
+	
+	function select_closest_entities(arr1,arr2,arr3,circle0) {
+
+		var big_radius = radius*6;
+		
+		circles.forEach(function(circle1) {
+		
+			var distance = Math.sqrt(Math.pow(circle0.x - circle1.x, 2) + Math.pow(circle0.y - circle1.y, 2));
+			if(distance <= big_radius) {
+				if(circle1.elemType === PLANT) {
+					arr1.push(circle1);
+				}
+				else if(circle1.elemType == HERBI) {
+					arr2.push(circle1);
+				}
+				else { // carni
+					arr3.push(circle1);
+				}
+			}
+		});
+	}
+	
+	//---------------------------- check_with_genes ---------------------------
+	
+	function check_with_genes(arr1,circle1,shift){
+		for (var i=0; i<5; i++) {		
+			for (var j=0; j<5; j++) {		
+				if(arr1[i][j] === 1) { 
+					if(circle1.genes[shift + (i*5 + j)*2] != 0 || circle1.genes[shift + (i*5 + j)*2 + 1] != 0) {
+						circle1.dx = circle1.genes[100+(i*5 + j)*2];
+						circle1.dy = circle1.genes[100+(i*5 + j)*2 + 1];
+						return true;
+					}
+				}
+			}		
+		}
+	}
+
 	//--------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------------
 	//
@@ -452,23 +505,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		var herbies = [];
 		var carnies = [];
 		
-		var big_radius = radius*6;
-		
-		circles.forEach(function(circle1) {
-		
-			var distance = Math.sqrt(Math.pow(circle.x - circle1.x, 2) + Math.pow(circle.y - circle1.y, 2));
-			if(distance <= big_radius) {
-				if(circle1.elemType === PLANT) {
-					plants.push(circle1);
-				}
-				else if(circle1.elemType == HERBI) {
-					herbies.push(circle1);
-				}
-				else { // carni
-					carnies.push(circle1);
-				}
-			}
-		});
+		select_closest_entities(plants,herbies,carnies,circle);
 		
 		//-------------------------- prepare animal vision
 		
@@ -476,105 +513,19 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		var herbies1 = [];
 		var carnies1 = [];
 		
-		for (let i=0; i<5; i++) {
-			plants1.push(Array(5).fill(0));
-		}
+		fill_arr(plants,plants1,circle);
+		fill_arr(herbies,herbies1,circle);
+		fill_arr(carnies,carnies1,circle);
 		
-		for (var i=0; i<5; i++) {		
-			for (var j=0; j<5; j++) {		
-				for(var k=0; k<plants.length; k++) {
-					var x = circle.x + 2*radius*(2-i);
-					var y = circle.y + 2*radius*(2-j);
-									
-					var distance = Math.sqrt(Math.pow(x - plants[k].x, 2) + Math.pow(y - plants[k].y, 2));
-					
-					if(distance < radius) {
-						plants1[i][j] = 1;
-					}
-				}
-			}
+		if(check_with_genes(carnies1,circle,100)){
+			return true;
 		}
-		
-		for (let i=0; i<5; i++) {
-			herbies1.push(Array(5).fill(0));
+		if(check_with_genes(herbies1,circle,50)){
+			return true;
 		}
-		
-		for (var i=0; i<5; i++) {		
-			for (var j=0; j<5; j++) {		
-				for(var k=0; k<herbies.length; k++) {
-					var x = circle.x + 2*radius*(2-i);
-					var y = circle.y + 2*radius*(2-j);
-									
-					var distance = Math.sqrt(Math.pow(x - herbies[k].x, 2) + Math.pow(y - herbies[k].y, 2));
-					
-					if(distance < radius) {
-						herbies1[i][j] = 1;
-					}
-				}
-			}
+		if(check_with_genes(plants1,circle,0)){
+			return true;
 		}
-
-
-		for (let i=0; i<5; i++) {
-			carnies1.push(Array(5).fill(0));
-		}
-		
-		for (var i=0; i<5; i++) {		
-			for (var j=0; j<5; j++) {		
-				for(var k=0; k<carnies.length; k++) {
-					var x = circle.x + 2*radius*(2-i);
-					var y = circle.y + 2*radius*(2-j);
-									
-					var distance = Math.sqrt(Math.pow(x - carnies[k].x, 2) + Math.pow(y - carnies[k].y, 2));
-					
-					if(distance < radius) {
-						carnies1[i][j] = 1;
-					}
-				}
-			}
-		}
-
-		// check with genes
-		
-		for (var i=0; i<5; i++) {		
-			for (var j=0; j<5; j++) {		
-				if(carnies1[i][j] === 1) { 
-					
-					if(circle.genes[100 + (i*5 + j)*2] != 0 || circle.genes[100 + (i*5 + j)*2 + 1] != 0) {
-						circle.dx = circle.genes[100+(i*5 + j)*2];
-						circle.dy = circle.genes[100+(i*5 + j)*2 + 1];
-						return true;
-					}
-				}
-			}		
-		}
-
-		for (var i=0; i<5; i++) {		
-			for (var j=0; j<5; j++) {		
-				if(herbies1[i][j] === 1) { 
-					
-					if(circle.genes[50 + (i*5 + j)*2] != 0 || circle.genes[50 + (i*5 + j)*2 + 1] != 0) {
-						circle.dx = circle.genes[50 + (i*5 + j)*2];
-						circle.dy = circle.genes[50 + (i*5 + j)*2 + 1];
-						return true;
-					}				
-				}
-			}		
-		}
-
-		for (var i=0; i<5; i++) {		
-			for (var j=0; j<5; j++) {		
-				if(plants1[i][j] === 1) { 
-					
-					if(circle.genes[(i*5 + j)*2] != 0 || circle.genes[(i*5 + j)*2 + 1] != 0) {
-						circle.dx = circle.genes[(i*5 + j)*2];
-						circle.dy = circle.genes[(i*5 + j)*2 + 1];
-						return true;
-					}				
-				}
-			}		
-		}
-		
 		return false;
 	} // function think(circle)
 
@@ -1105,8 +1056,9 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				if(ret === false) {
 					// sometimes change direction
 					if(Math.random() < 0.01) {
-						circle.dx = getMoveRandomNumber();
-						circle.dy = getMoveRandomNumber();
+						var p = randomPointInUnitCircle();
+						circle.dx = p.x;
+						circle.dy = p.y;
 						//if(circle === selectedCircle) {
 						//	console.log("change direction to random, dx="+circle.dx+", dy="+circle.dy);
 						//}
