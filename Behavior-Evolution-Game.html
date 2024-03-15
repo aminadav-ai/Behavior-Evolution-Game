@@ -245,9 +245,9 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	//----------------------------------  mutate -------------------------------------
 
 	function mutate(circle) {
-		if(Math.random() < 0.8) {
+		if(Math.random() < 0.4) {
 			var pos = Math.floor(Math.random() * 74);
-			if(Math.random() < 0.8) {
+			if(Math.random() < 0.9) {
 				circle.genes[pos*2] = getMoveRandomNumber()
 				circle.genes[pos*2+1] = getMoveRandomNumber()
 			}
@@ -1099,17 +1099,17 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				circle.energy -= 0.002;
 
 				var ret = think(circle);
-				if(circle === selectedCircle) {
-					console.log("think returns "+ret+", dx="+circle.dx+", dy="+circle.dy);
-				}
+				//if(circle === selectedCircle) {
+				//	console.log("think returns "+ret+", dx="+circle.dx+", dy="+circle.dy);
+				//}
 				if(ret === false) {
 					// sometimes change direction
 					if(Math.random() < 0.01) {
 						circle.dx = getMoveRandomNumber();
 						circle.dy = getMoveRandomNumber();
-						if(circle === selectedCircle) {
-							console.log("change direction to random, dx="+circle.dx+", dy="+circle.dy);
-						}
+						//if(circle === selectedCircle) {
+						//	console.log("change direction to random, dx="+circle.dx+", dy="+circle.dy);
+						//}
 					}				
 				}           
 				var x1 = circle.x + circle.dx;
