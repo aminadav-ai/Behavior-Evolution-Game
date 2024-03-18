@@ -521,9 +521,17 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		fill_arrays(circle);
 		
 		var p;
-		p=check_with_genes(circle.carnies1,circle,100);
-		if(!p.found){
+		if(circle.elemType === HERBI){
+			p=check_with_genes(circle.carnies1,circle,100);
+			if(!p.found){
+				p=check_with_genes(circle.herbies1,circle,50);
+			}
+		}
+		else {
 			p=check_with_genes(circle.herbies1,circle,50);
+			if(!p.found){
+				p=check_with_genes(circle.carnies1,circle,100);
+			}
 		}
 		if(!p.found){
 			p=check_with_genes(circle.plants1,circle,0);
