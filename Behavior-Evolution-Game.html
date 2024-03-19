@@ -93,7 +93,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			<button style="font-size: 16px;" onClick="addNewCarni()">New lion</button>
 			<button style="font-size: 16px;" onClick="Step()">Step</button>
 			<button style="font-size: 16px;" onClick="Run()">Run</button>
-			<button style="font-size: 16px;" onClick="SendGenes()">Send genes</button>
 		</td> 
 		<td>
 			<canvas id="canvasGlass" width="200" height="200" style="background-color: black;"></canvas>
@@ -1242,40 +1241,6 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	
 	} 
 	
-	function SendGenes() {
-	
-		// Create a new XMLHttpRequest object
-		var xhr = new XMLHttpRequest();
-
-		// Prepare the POST request
-		xhr.open("POST", "http://localhost:3000/genes", true);
-
-		// Set the request header (optional)
-		xhr.setRequestHeader("Content-Type", "application/json");
-
-		// Define the data to be sent in JSON format
-		var data = JSON.stringify({
-		    name: "John",
-		    genes: "dlkgjldjgldg"
-		});
-
-		// Send the POST request with the data
-		xhr.send(data);
-
-		// Event listener to handle response from the server
-		xhr.onload = function() {
-			if (xhr.status == 200) {
-				console.log("Request successful");
-				console.log(xhr.responseText); // Log the response from the server
-			} else {
-				console.error("Request failed with status:", xhr.status);
-			}
-		};	
-	
-	}    
-
-
-	  
 </script>  
 </body>
 </html>
