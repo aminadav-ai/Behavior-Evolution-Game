@@ -85,7 +85,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		</td>
 	</tr>
 </table>
-&nbsp;&nbsp;<span style="font-size: 22px; color:blue;" id="infoSelect">Tap the field to add new sheep</span><br>
+&nbsp;&nbsp;<span style="font-size: 22px; color:blue;" id="infoSelect">Tap field to add new sheep</span><br>
 <table>
 	<tr style="vertical-align:top;"> 
 		<td width="200"> 	
@@ -350,7 +350,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			selectedCircle = circles[circles.length - 1];       
 		}   
 
-		document.getElementById("infoSelect").textContent = "Touch entity to select";
+		document.getElementById("infoSelect").textContent = "Tap entity to select";
 		     
 		if(added) {
 			return;
@@ -1219,13 +1219,13 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	function addNewHerbi() {
 		addNewHerbiAction = true;
 		addNewCarniAction = false;
-		document.getElementById("infoSelect").textContent = "Tap the field to add new sheep";
+		document.getElementById("infoSelect").textContent = "Tap field to add new sheep";
 	}               
 
 	function addNewCarni() {
 		addNewHerbiAction = false;
 		addNewCarniAction = true;
-		document.getElementById("infoSelect").textContent = "Tap the field to add new lion";
+		document.getElementById("infoSelect").textContent = "Tap field to add new lion";
 	}        
 	
 	function Step() {
