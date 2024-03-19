@@ -85,7 +85,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		</td>
 	</tr>
 </table>
-&nbsp;&nbsp;<span style="font-size: 22px; color:blue;" id="infoSelect">Touch field to add new sheep</span><br>
+&nbsp;&nbsp;<span style="font-size: 22px; color:blue;" id="infoSelect">Tap the field to add new sheep</span><br>
 <table>
 	<tr style="vertical-align:top;"> 
 		<td width="200"> 	
@@ -93,6 +93,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			<button style="font-size: 16px;" onClick="addNewCarni()">New lion</button>
 			<button style="font-size: 16px;" onClick="Step()">Step</button>
 			<button style="font-size: 16px;" onClick="Run()">Run</button>
+			<button style="font-size: 16px;" onClick="SendGenes()">Send genes</button>
 		</td> 
 		<td>
 			<canvas id="canvasGlass" width="200" height="200" style="background-color: black;"></canvas>
@@ -385,6 +386,8 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		return formattedString.trim();
 	}
 	
+	//--------------------------------------- grid ---------------------------------------------
+
 	function grid(ctx,canvas) {
 		ctx.lineWidth = 1; 
 		ctx.strokeStyle = 'white';
@@ -403,7 +406,9 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		}
 	}
 	
-	function grid_circles(ctx,canvas,shift) {
+	//--------------------------------------- draw_genes ---------------------------------------------
+	
+	function draw_genes(ctx,canvas,shift) {
 		ctx.lineWidth = 1; 
 		ctx.strokeStyle = 'white';
 		
@@ -423,6 +428,30 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 				ctx.stroke(); 
 			}
 		}
+	}
+	
+	//-------------------------------------- draw_selected_direction --------------------------------------------
+	
+	function draw_selected_direction(ctx, canvas) {
+		if(selectedCircle === null){
+			return;
+		}
+		ctx.lineWidth = 3;
+		if(selectedCircle.elemType === HERBI){ 
+			ctx.strokeStyle = 'red';
+		}
+		else {
+			ctx.strokeStyle = 'red';
+		}
+		var x = canvas.width/2;
+		var y = canvas.height/2;
+		ctx.beginPath();
+		ctx.arc(x, y, radius*2, 0, 2 * Math.PI);
+		ctx.stroke();				
+		ctx.beginPath();
+		ctx.moveTo(x + selectedCircle.dx*radius*2, y + selectedCircle.dy*radius*2); 
+		ctx.lineTo(x + selectedCircle.dx*radius*4, y + selectedCircle.dy*radius*4); 
+		ctx.stroke(); 
 	}
 
 	//------------------------------- fill_arrays --------------------------------------
@@ -722,9 +751,9 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		grid(ctxHerbies,canvasHerbies);
 		grid(ctxCarnies,canvasCarnies);
 		
-		grid_circles(ctxGenesPlants,canvasGenesPlants,0);
-		grid_circles(ctxGenesHerbies,canvasGenesHerbies,50);
-		grid_circles(ctxGenesCarnies,canvasGenesCarnies,100);
+		draw_genes(ctxGenesPlants,canvasGenesPlants,0);
+		draw_genes(ctxGenesHerbies,canvasGenesHerbies,50);
+		draw_genes(ctxGenesCarnies,canvasGenesCarnies,100);
 		
 		// ----------------- draw selected circle
 		
@@ -816,6 +845,7 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 			}
 		}
 		
+		// red arc
 		if(found) {
 			DrawArcOnGenesCanvas(fi,fj,fshift,'red');		
 		}
@@ -830,6 +860,8 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 		
 		
 		}
+		
+		draw_selected_direction(ctxGlass,canvasGlass);
 
 	} // function vision(circle)
 
@@ -1187,13 +1219,13 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	function addNewHerbi() {
 		addNewHerbiAction = true;
 		addNewCarniAction = false;
-		document.getElementById("infoSelect").textContent = "Touch field to add new sheep";
+		document.getElementById("infoSelect").textContent = "Tap the field to add new sheep";
 	}               
 
 	function addNewCarni() {
 		addNewHerbiAction = false;
 		addNewCarniAction = true;
-		document.getElementById("infoSelect").textContent = "Touch field to add new lion";
+		document.getElementById("infoSelect").textContent = "Tap the field to add new lion";
 	}        
 	
 	function Step() {
@@ -1208,7 +1240,39 @@ You can adjust the number of lions by changing the Energy transmission slider.  
 	function Run() {
 		stepMode = false;
 	
-	}     
+	} 
+	
+	function SendGenes() {
+	
+		// Create a new XMLHttpRequest object
+		var xhr = new XMLHttpRequest();
+
+		// Prepare the POST request
+		xhr.open("POST", "http://localhost:3000/genes", true);
+
+		// Set the request header (optional)
+		xhr.setRequestHeader("Content-Type", "application/json");
+
+		// Define the data to be sent in JSON format
+		var data = JSON.stringify({
+		    name: "John",
+		    genes: "dlkgjldjgldg"
+		});
+
+		// Send the POST request with the data
+		xhr.send(data);
+
+		// Event listener to handle response from the server
+		xhr.onload = function() {
+			if (xhr.status == 200) {
+				console.log("Request successful");
+				console.log(xhr.responseText); // Log the response from the server
+			} else {
+				console.error("Request failed with status:", xhr.status);
+			}
+		};	
+	
+	}    
 
 
 	  
