@@ -1,7 +1,72 @@
-# Behavior-Evolution-Game
+# 🧬 Behavior Evolution Game
 
-This game was created to study how behavior is formed under the influence of mutations in genes responsible for brain function.
+A browser-based simulation designed to study how behavior evolves through genetic mutations affecting brain function.
 
-The grass grows, you add one sheep and wait for the sheep to multiply. Then you add one lion and wait for the sheep and lions to breed, change generations and mutate. Within half an hour you can notice changes in the behavior of the sheep. Changes in the behavior of lions will occur only after a long time, when sheep, with the help of many mutations, learn to effectively evade lions, then mutational changes will begin in lions. The project is expected to run for many hours and even days to analyze the behavior of these animals. The project is currently under development. It is planned to add a function for saving the state of the world.
+🌐 **Live Demo**: [Play the Game](https://aminadav-ai.github.io/Behavior-Evolution-Game/)
 
-You can select an individual animal and get detailed information about it below. You can also see the work of the animal’s brain and the genes responsible for behavior. It is possible to stop the world, follow it step by step and trace the brain function of the selected animal. For simplicity, the genes are made very primitively and the brain is also very primitive in these animals.
+---
+
+## 🧠 Overview
+
+This simulation explores how behavioral traits can emerge, adapt, and evolve over time as a result of genetic changes. Entities like **grass**, **sheep**, and **lions** interact within an environment that supports mutation, selection, and survival dynamics.
+
+- 🌱 Grass grows automatically.
+- 🐑 Sheep are added by the user and consume grass.
+- 🦁 Lions hunt sheep, and both species can reproduce and mutate over generations.
+- 👁 Entities have limited perception and act based on internal “genes”.
+- 🧬 Over time, evolution drives smarter or more adaptive behaviors.
+
+---
+
+## 🕹 Features
+
+- Add or remove animals dynamically.
+- Step-by-step or continuous simulation modes.
+- Visual indicators of what an animal "sees".
+- View each entity’s:
+  - Type
+  - Energy
+  - Offspring count
+  - Age & generation
+  - Sensory input
+  - Genes (visualized)
+
+---
+
+## 💡 Technologies Used
+
+- Vanilla JavaScript (no frameworks)
+- HTML5 + CSS3
+- Algorithmic logic based on **Genetic Algorithms**
+- Visualization of simulated brain/gene function
+
+---
+
+## 🧑‍🔬 How to Use
+
+1. Open the [live demo](https://aminadav-ai.github.io/Behavior-Evolution-Game/).
+2. Click "New Sheep" or "New Lion" to populate the world.
+3. Use “Step” to advance frame-by-frame or “Run” to simulate continuously.
+4. Tap on any animal to inspect its behavior, sensory input, and internal state.
+5. Observe how behavior evolves over time with genetic mutation.
+
+---
+
+## 🚧 Future Plans
+
+- Save/load simulation state
+- Add brain visualizer / heatmap
+- Export data for research analysis
+- Improve UI and controls
+
+---
+
+## 📜 License
+
+[GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+---
+
+## 🧠 Author
+
+Developed by [Yehuda Aminadav](https://github.com/aminadav-ai) as a personal AI/biology simulation and algorithmic project.
